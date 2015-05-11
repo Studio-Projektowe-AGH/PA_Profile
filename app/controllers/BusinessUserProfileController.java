@@ -2,8 +2,8 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javafx.util.Pair;
 import models.BusinessUserProfile;
+import models.StringPair;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.mongodb.morphia.Morphia;
@@ -54,20 +54,20 @@ public class BusinessUserProfileController extends Controller{
         if(email == null){
             return unauthorized("Wrong token");
         }
-        List<Pair<String,String>> updateData = new ArrayList<Pair<String, String>>();
+        List<StringPair> updateData = new ArrayList<StringPair>();
         Iterator<String> stringIterator = jsonBody.fieldNames();
         while(stringIterator.hasNext()){
             String fieldName = stringIterator.next();
             if(fieldName.equals("auth_token")){
                 continue;
             }
-            updateData.add(new Pair<>(fieldName, jsonBody.findPath(fieldName).textValue()));
+            updateData.add(new StringPair(fieldName, jsonBody.findPath(fieldName).textValue()));
         }
         BusinessUserProfile userToUpdate = dataBaseService.findOneByEmail(email);
         if(userToUpdate == null){
             return Results.notFound("There is no user with such email in database");
         }
-        for(Pair<String,String> x : updateData) {
+        for(StringPair x : updateData) {
             if (x.getKey().equals("name")) {
                 userToUpdate.setName(x.getValue());
             } else if (x.getKey().equals("category")) {
@@ -136,3 +136,5 @@ public class BusinessUserProfileController extends Controller{
     }
 
 }
+
+
