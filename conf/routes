@@ -5,9 +5,9 @@
 # Home page
 GET         /                     controllers.Application.index()
 
-POST        /createProfile         controllers.BusinessUserProfileController.createProfile()
-GET         /getProfile            controllers.BusinessUserProfileController.getBusinessUserProfile()
-GET         /test                 controllers.TestOfWebServiceClient.restEasyTest()
+
+POST        /createProfile        controllers.BusinessUserProfileController.createProfile()
+GET         /getProfile           controllers.BusinessUserProfileController.getBusinessUserProfile()
 
 POST        /updateProfile        controllers.BusinessUserProfileController.updateProfile()
 # Map static resources from the /public folder to the /assets URL path
