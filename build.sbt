@@ -23,5 +23,12 @@ libraryDependencies += "com.google.guava" % "guava" % "12.0"
 
 libraryDependencies += "com.restfb" % "restfb" % "1.10.1"
 
+libraryDependencies += "org.jboss.resteasy" % "resteasy-jaxrs" % "3.0.11.Final"
+
+libraryDependencies += "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13"
+
+libraryDependencies += "org.jboss.resteasy" % "resteasy-jackson2-provider" % "3.0.11.Final"
+
+
 
 fork in run := true

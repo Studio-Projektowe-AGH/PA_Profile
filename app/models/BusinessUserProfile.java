@@ -26,8 +26,9 @@ public class BusinessUserProfile {
     public BusinessUserProfile(){};
 
     // TODO najlepiej jakby tutaj przekazywac w tym konstruktorze takze token fb
-    public BusinessUserProfile(String email) {
+    public BusinessUserProfile(String email, String fbToken) {
         this.email = email;
+        this.fbToken = fbToken;
     }
 
     public String getEmail() {
