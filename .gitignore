@@ -17,4 +17,4 @@ dist
 # Intelli J ignores
 .idea/*
 
-play-fork-run.sbt
+/project/play-fork-run.sbt
