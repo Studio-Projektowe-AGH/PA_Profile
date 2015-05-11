@@ -29,6 +29,7 @@ libraryDependencies += "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13"
 
 libraryDependencies += "org.jboss.resteasy" % "resteasy-jackson2-provider" % "3.0.11.Final"
 
+libraryDependencies += "com.zenjava" % "javafx-maven-plugin" % "8.1.2"
 
 
 fork in run := true
