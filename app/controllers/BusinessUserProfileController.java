@@ -60,7 +60,7 @@ public class BusinessUserProfileController extends Controller{
             if(fieldName.equals("auth_token")){
                 continue;
             }
-            updateData.add(new Pair<String,String>(fieldName, jsonBody.findPath(fieldName).textValue()));
+            updateData.add(new Pair<>(fieldName, jsonBody.findPath(fieldName).textValue()));
         }
         BusinessUserProfile userToUpdate = dataBaseService.findOneByEmail(email);
         if(userToUpdate == null){
