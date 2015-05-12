@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import javax.persistence.PrePersist;
+
 /**
  * Created by Kris on 2015-05-07.
  */
@@ -27,7 +29,7 @@ public class BusinessUserProfile {
 
     // TODO najlepiej jakby tutaj przekazywac w tym konstruktorze takze token fb
     public BusinessUserProfile(String email, String fbToken) {
-        this.email = email;
+        this.email = email.toLowerCase();
         this.fbToken = fbToken;
     }
 
@@ -73,4 +75,10 @@ public class BusinessUserProfile {
     public void setFbToken(String fbToken) {
         this.fbToken = fbToken;
     }
+
+    @PrePersist
+    private void lowerEmail() {
+        this.email = this.email.toLowerCase();
+    }
+
 }

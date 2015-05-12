@@ -11,9 +11,9 @@ import org.mongodb.morphia.query.Query;
 /**
  * Created by Kris on 2015-05-07.
  */
-public class DataBaseService extends BasicDAO<BusinessUserProfile, ObjectId>{
+public class DBProfileService extends BasicDAO<BusinessUserProfile, ObjectId>{
 
-    protected DataBaseService(MongoClient mongoClient, Morphia morphia, String dbName) {
+    protected DBProfileService(MongoClient mongoClient, Morphia morphia, String dbName) {
         super(mongoClient, morphia, dbName);
     }
 

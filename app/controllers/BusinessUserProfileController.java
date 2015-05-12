@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jose.JOSEException;
 import models.BusinessUserProfile;
 import models.StringPair;
 import org.jboss.resteasy.client.ClientRequest;
@@ -13,9 +14,10 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
 import services.authorization.AuthorizationService;
-import services.data.DataBaseService;
-import services.data.DataBaseServiceProvider;
+import services.data.DBProfileService;
+import services.data.DBServicesProvider;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,18 +27,24 @@ import java.util.List;
  * Created by Kris on 2015-05-07.
  */
 public class BusinessUserProfileController extends Controller{
-    static DataBaseService dataBaseService = DataBaseServiceProvider.getDataBaseService();
+    static DBProfileService DBProfileService = DBServicesProvider.getDbProfileService();
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getBusinessUserProfile(){
         JsonNode jsonBody = request().body().asJson();
         String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = AuthorizationService.verifyToken(auth_token);
+        String email = null;
+        try {
+            email = AuthorizationService.verifyToken(auth_token);
+        } catch (ParseException | JOSEException e) {
+            e.printStackTrace();
+            return unauthorized("You have invalid token");
+        }
         if(email == null){
             return unauthorized("Wrong token");
         }
         Morphia morphia = new Morphia().map(BusinessUserProfile.class);
-        BusinessUserProfile profile = dataBaseService.findOneByEmail(email);
+        BusinessUserProfile profile = DBProfileService.findOneByEmail(email);
         if(profile == null){
             return internalServerError("Weird thing: token was verified and it's ok, but there is no profile for this user ");
         }
@@ -50,7 +58,13 @@ public class BusinessUserProfileController extends Controller{
     public static Result updateProfile(){
         JsonNode jsonBody = request().body().asJson();
         String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = AuthorizationService.verifyToken(auth_token);
+        String email = null;
+        try {
+            email = AuthorizationService.verifyToken(auth_token);
+        } catch (ParseException | JOSEException e) {
+            e.printStackTrace();
+            return unauthorized("You have invalid token");
+        }
         if(email == null){
             return unauthorized("Wrong token");
         }
@@ -63,9 +77,9 @@ public class BusinessUserProfileController extends Controller{
             }
             updateData.add(new StringPair(fieldName, jsonBody.findPath(fieldName).textValue()));
         }
-        BusinessUserProfile userToUpdate = dataBaseService.findOneByEmail(email);
+        BusinessUserProfile userToUpdate = DBProfileService.findOneByEmail(email);
         if(userToUpdate == null){
-            return Results.notFound("There is no user with such email in database");
+            return Results.notFound("There is no user with such email: "+ email+" in database");
         }
         for(StringPair x : updateData) {
             if (x.getKey().equals("name")) {
@@ -81,7 +95,7 @@ public class BusinessUserProfileController extends Controller{
             }
         }
 
-        dataBaseService.save(userToUpdate);
+        DBProfileService.save(userToUpdate);
         return Results.ok("Profile updated");
     }
 
@@ -92,7 +106,18 @@ public class BusinessUserProfileController extends Controller{
     public static Result createProfile(){
         JsonNode jsonBody = request().body().asJson();
         String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = AuthorizationService.verifyToken(auth_token);
+        String email = null;
+        try {
+            email = AuthorizationService.verifyToken(auth_token);
+        } catch (ParseException | JOSEException e) {
+            e.printStackTrace();
+            return unauthorized("You have invalid token");
+        }
+
+        if(DBProfileService.findOneByEmail(email)!=null){
+            return ok("Profile is already created");
+        }
+
         //Todo check this fields later
         String fbToken = jsonBody.findPath("fb_token").textValue();
 
@@ -101,14 +126,14 @@ public class BusinessUserProfileController extends Controller{
         }
 
         BusinessUserProfile newUser = new BusinessUserProfile(email, fbToken);
-        dataBaseService.save(newUser);
+        DBProfileService.save(newUser);
         updateProfileFromFB(email);
-        return ok();
+        return ok("User of email: " + email + "created");
 
     }
 
     private static boolean updateProfileFromFB(String email) {
-        BusinessUserProfile user = dataBaseService.findOneByEmail(email);
+        BusinessUserProfile user = DBProfileService.findOneByEmail(email);
 
         ObjectNode body = Json.newObject();
         body.put("fb_token",user.getFbToken());
@@ -131,7 +156,7 @@ public class BusinessUserProfileController extends Controller{
         user.setCategory(fbAnwer.get("category").asText());
         //Todo dopisz reszte pól
 
-        dataBaseService.save(user);
+        DBProfileService.save(user);
         return true;
     }
 
