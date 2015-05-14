@@ -33,7 +33,6 @@ public class UpdateProfileTest {
                 ObjectNode body = Json.newObject();
                 body.put("name", "Tawo Club");
 
-                //TODO PAMIETAJ ZEBY TUAJ POWSTAWIAC DOBRE ID
                 FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
