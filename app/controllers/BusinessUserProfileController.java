@@ -1,33 +1,38 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.WriteResult;
 import com.nimbusds.jose.JOSEException;
 import models.BusinessUserProfile;
-import models.StringPair;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
+import org.mongodb.morphia.query.UpdateResults;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Results;
 import services.authorization.AuthorizationService;
 import services.data.DBProfileService;
 import services.data.DBServicesProvider;
+import services.utils.Utils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 
 /**
  * Created by Kris on 2015-05-07.
  */
 public class BusinessUserProfileController extends Controller{
-    static DBProfileService DBProfileService = DBServicesProvider.getDbProfileService();
+    static DBProfileService dbProfileService = DBServicesProvider.getDbProfileService();
+    static Morphia mapper = new Morphia();
+    static {
+        mapper.map(BusinessUserProfile.class).getMapper().getOptions().setStoreNulls(true);
+    }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getBusinessUserProfile(){
@@ -44,7 +49,7 @@ public class BusinessUserProfileController extends Controller{
             return unauthorized("Wrong token");
         }
         Morphia morphia = new Morphia().map(BusinessUserProfile.class);
-        BusinessUserProfile profile = DBProfileService.findOneByEmail(email);
+        BusinessUserProfile profile = dbProfileService.findOneByEmail(email);
         if(profile == null){
             return internalServerError("Weird thing: token was verified and it's ok, but there is no profile for this user ");
         }
@@ -55,111 +60,58 @@ public class BusinessUserProfileController extends Controller{
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result updateProfile(){
-        JsonNode jsonBody = request().body().asJson();
-        String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = null;
+    public static Result updateProfile(String userId){
         try {
-            email = AuthorizationService.verifyToken(auth_token);
-        } catch (ParseException | JOSEException e) {
-            e.printStackTrace();
-            return unauthorized("You have invalid token");
-        }
-        if(email == null){
-            return unauthorized("Wrong token");
-        }
-        List<StringPair> updateData = new ArrayList<StringPair>();
-        Iterator<String> stringIterator = jsonBody.fieldNames();
-        while(stringIterator.hasNext()){
-            String fieldName = stringIterator.next();
-            if(fieldName.equals("auth_token")){
-                continue;
-            }
-            updateData.add(new StringPair(fieldName, jsonBody.findPath(fieldName).textValue()));
-        }
-        BusinessUserProfile userToUpdate = DBProfileService.findOneByEmail(email);
-        if(userToUpdate == null){
-            return Results.notFound("There is no user with such email: "+ email+" in database");
-        }
-        for(StringPair x : updateData) {
-            if (x.getKey().equals("name")) {
-                userToUpdate.setName(x.getValue());
-            } else if (x.getKey().equals("category")) {
-                userToUpdate.setCategory(x.getValue());
-            } else if (x.getKey().equals("description")) {
-                userToUpdate.setDescription(x.getValue());
-            } else if (x.getKey().equals("website")) {
-                userToUpdate.setWebsite(x.getValue());
-            } else {
-                return Results.badRequest("Wrong name of field to update: " + x.getKey());
-            }
-        }
-
-        DBProfileService.save(userToUpdate);
-        return Results.ok("Profile updated");
-    }
-
-
-
-//Tu oczekuje w Jsonie tokena naszego i fbkowego
-    @BodyParser.Of(BodyParser.Json.class)
-    public static Result createProfile(){
-        JsonNode jsonBody = request().body().asJson();
-        String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = null;
-        try {
-            email = AuthorizationService.verifyToken(auth_token);
-        } catch (ParseException | JOSEException e) {
-            e.printStackTrace();
-            return unauthorized("You have invalid token");
-        }
-
-        if(DBProfileService.findOneByEmail(email)!=null){
-            return ok("Profile is already created");
-        }
-
-        //Todo check this fields later
-        String fbToken = jsonBody.findPath("fb_token").textValue();
-
-        if(email == null){
-            return internalServerError("Received token is not valid");
-        }
-
-        BusinessUserProfile newUser = new BusinessUserProfile(email, fbToken);
-        DBProfileService.save(newUser);
-        updateProfileFromFB(email);
-        return ok("User of email: " + email + "created");
-
-    }
-
-    private static boolean updateProfileFromFB(String email) {
-        BusinessUserProfile user = DBProfileService.findOneByEmail(email);
-
-        ObjectNode body = Json.newObject();
-        body.put("fb_token",user.getFbToken());
-        //Todo check this address
-        ClientRequest request = new ClientRequest("https://partyadvisor.herokuapp.com/auth/verifyToken");
-        request.accept("application/json");
-        request.body("application/json",body);
-
-        ClientResponse<JsonNode> response = null;
-        try {
-            response = request.post(JsonNode.class);
-            if(response.getStatus() != 200){
-                return false;
+            if(dbProfileService.get(new ObjectId(userId))== null){
+                dbProfileService.save(new BusinessUserProfile(userId));
+                //return notFound("There is no user with this id: " + userId);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+           e.printStackTrace();
+            return notFound("This is wrong format of user id: " + userId);
         }
-        JsonNode fbAnwer = response.getEntity();
-        user.setCategory(fbAnwer.get("category").asText());
-        //Todo dopisz reszte pól
 
-        DBProfileService.save(user);
-        return true;
+
+        JsonNode jsonBody = request().body().asJson();
+        Iterator<Map.Entry<String, JsonNode>> nodeIterator = jsonBody.fields();
+
+        while (nodeIterator.hasNext()) {
+            Map.Entry<String, JsonNode> field = nodeIterator.next();
+            boolean isValidUserField = Utils.isMemberOfClass(field.getKey(), BusinessUserProfile.class);
+            if(isValidUserField == false){
+                return badRequest("Wrong json field: " + field.getKey());
+            }
+        }
+
+        nodeIterator = jsonBody.fields();
+        Query<BusinessUserProfile> query = dbProfileService.createQuery().field(Mapper.ID_KEY).equal(new ObjectId(userId));
+        while (nodeIterator.hasNext()) {
+            Map.Entry<String, JsonNode> field = nodeIterator.next();
+            UpdateOperations<BusinessUserProfile> updateOperation = dbProfileService.createUpdateOperations()
+                    .set(field.getKey(), field.getValue().asText());
+            UpdateResults updateResults = dbProfileService.getDatastore().update(query, updateOperation, true);
+            System.out.println("Uaktualnienie: "+field.getKey()+" z wartoscia: "+field.getValue()+" powiodlo sie (1 oznacza tak): " + updateResults.getInsertedCount());
+        }
+
+        return ok("Profile updated");
     }
 
+
+
+    public static Result deleteProfile(String userId) {
+        WriteResult writeResult = dbProfileService.deleteById(new ObjectId(userId));
+        if(writeResult.getN()==1){
+            return ok();
+        }else {
+            return internalServerError("Not deleted for some reason");
+        }
+    }
+
+    public static Result getProfile(String userId) {
+        BusinessUserProfile profile = dbProfileService.get(new ObjectId(userId));
+        JsonNode profileInJson = Json.parse(mapper.toDBObject(profile).toString());
+        return ok(profileInJson);
+    }
 }
 
 

@@ -16,6 +16,7 @@ import static play.test.Helpers.*;
 public class UpdateProfileTest {
 
     static play.test.FakeApplication application;
+    static String correctUserId = "5554f84952423afe1e6ebdcf";
 
     @BeforeClass
     public static void setUpClass(){
@@ -24,22 +25,124 @@ public class UpdateProfileTest {
 
 
     @Test
-    public void handleCorrectProfileUpdate(){
+    public void acceptingCorrectFieldsInJsonTest(){
         running(fakeApplication(), new Runnable() {
             @Override
             public void run() {
-                String token = "eyJjdHkiOiJ0ZXh0XC9wbGFpbiIsImFsZyI6IkhTMjU2In0.eyJ1c2VySWQiOiI1NTQ5MTVkMDUyNDIyOWY4Y2IwNDc1ZTQiLCJ1c2VyUm9sZSI6ImluZGl2aWR1YWwifQ.eDHKz_XsePl7wmqiargSJF7csNGN22xwF84WZvdh1O4";
 
                 ObjectNode body = Json.newObject();
-                body.put("auth_token",token);
                 body.put("name", "Tawo Club");
-                body.put("category", "Students clubs");
-                FakeRequest request = fakeRequest("POST", "/updateProfile").withJsonBody(body);
 
+                //TODO PAMIETAJ ZEBY TUAJ POWSTAWIAC DOBRE ID
+                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
-                assertEquals("When correct update response: "+ contentAsString(result),
+                assertEquals("When correct field in update response: "+ contentAsString(result),
                         200, status(result));
+
+            }
+        });
+
+    }
+
+    @Test
+    public void denyingWrongFieldsInJsonTest(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+
+                ObjectNode body = Json.newObject();
+                body.put("thereIsNoSuchFieldInClass", "Tawo Club");
+
+                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                Result result = route(request);
+
+                assertEquals("When wrong field in update response: "+ contentAsString(result),
+                        400, status(result));
+            }
+        });
+
+    }
+
+   @Test
+    public void denyingWrongUserIds(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+
+                ObjectNode body = Json.newObject();
+
+                FakeRequest request = fakeRequest("PUT", "/userProfile/zleId").withJsonBody(body);
+                Result result = route(request);
+
+                assertEquals("When wrong userId in update response: "+ contentAsString(result),
+                        404, status(result));
+            }
+        });
+
+    }
+
+    @Test
+    public void acceptingCorrectUserIds(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+
+                ObjectNode body = Json.newObject();
+
+                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                Result result = route(request);
+
+                assertEquals("When correct userId in update response: "+ contentAsString(result),
+                        200, status(result));
+            }
+        });
+
+    }
+
+    @Test
+    public void updatingProfile(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+
+                ObjectNode body = Json.newObject();
+                body.put("name", "Tawo Club");
+                body.put("phone", "888 613 538");
+                body.put("category_list", "[ Bar, Pub ]");
+
+                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                Result result = route(request);
+
+                assertEquals("When correct userId in update response: "+ contentAsString(result),
+                        200, status(result));
+            }
+        });
+
+    }
+
+    @Test
+    public void createAndDeleteUserProfile(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+                String newUserId = "553f5db8d4c6879782ddca7f";
+                ObjectNode body = Json.newObject();
+                body.put("name", "Nowy klub");
+                body.put("phone", "888 613 538");
+                body.put("category_list", "[ Bar, Pub ]");
+
+                FakeRequest request = fakeRequest("POST", "/userProfile/"+newUserId).withJsonBody(body);
+                Result result = route(request);
+
+                assertEquals("When correct userId in create user response: "+ contentAsString(result),
+                        200, status(result));
+
+                FakeRequest request2 = fakeRequest("DELETE", "/userProfile/"+newUserId);
+                Result result2 = route(request2);
+
+                assertEquals("When correct userId in delete user response: "+ contentAsString(result2),
+                        200, status(result2));
             }
         });
 

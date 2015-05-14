@@ -22,6 +22,8 @@ public class DBServicesProvider {
             MongoClientURI mongoClientURI = new MongoClientURI(uriString);
             MongoClient mongoClient = new MongoClient(mongoClientURI);
             Morphia morphia = new Morphia();
+            morphia.getMapper().getOptions().setStoreEmpties(true);
+            morphia.getMapper().getOptions().setStoreNulls(true);
 
             dbProfileService = new DBProfileService(mongoClient, morphia, dbName);
         } catch (UnknownHostException uhe) {
