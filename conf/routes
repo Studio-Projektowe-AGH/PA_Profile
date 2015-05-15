@@ -6,10 +6,10 @@
 GET           /                           controllers.Application.index()
 
 
-GET           /userProfile/:userId        controllers.BusinessUserProfileController.getProfile(userId)
-POST          /userProfile/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
-DELETE        /userProfile/:userId        controllers.BusinessUserProfileController.deleteProfile(userId)
-PUT           /userProfile/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
+GET           /profiles/business/:userId        controllers.BusinessUserProfileController.getProfile(userId)
+POST          /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
+DELETE        /profiles/business/:userId        controllers.BusinessUserProfileController.deleteProfile(userId)
+PUT           /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file               controllers.Assets.at(path="/public", file)
