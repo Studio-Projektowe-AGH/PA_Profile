@@ -49,7 +49,7 @@ public class DBProfileServiceTest {
     }
 
     @Test
-    public void findingEntityByQuerryTest() {
+    public void findingEntityByQueryTest() {
         running(fakeApplication(), new Runnable() {
             @Override
             public void run() {

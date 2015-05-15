@@ -33,7 +33,7 @@ public class UpdateProfileTest {
                 ObjectNode body = Json.newObject();
                 body.put("name", "Tawo Club");
 
-                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct field in update response: "+ contentAsString(result),
@@ -53,7 +53,7 @@ public class UpdateProfileTest {
                 ObjectNode body = Json.newObject();
                 body.put("thereIsNoSuchFieldInClass", "Tawo Club");
 
-                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When wrong field in update response: "+ contentAsString(result),
@@ -71,7 +71,7 @@ public class UpdateProfileTest {
 
                 ObjectNode body = Json.newObject();
 
-                FakeRequest request = fakeRequest("PUT", "/userProfile/zleId").withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/business/zleId").withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When wrong userId in update response: "+ contentAsString(result),
@@ -89,7 +89,7 @@ public class UpdateProfileTest {
 
                 ObjectNode body = Json.newObject();
 
-                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct userId in update response: "+ contentAsString(result),
@@ -110,7 +110,7 @@ public class UpdateProfileTest {
                 body.put("phone", "888 613 538");
                 body.put("category_list", "[ Bar, Pub ]");
 
-                FakeRequest request = fakeRequest("PUT", "/userProfile/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct userId in update response: "+ contentAsString(result),
@@ -131,13 +131,13 @@ public class UpdateProfileTest {
                 body.put("phone", "888 613 538");
                 body.put("category_list", "[ Bar, Pub ]");
 
-                FakeRequest request = fakeRequest("POST", "/userProfile/"+newUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("POST", "/profiles/business/"+newUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct userId in create user response: "+ contentAsString(result),
                         200, status(result));
 
-                FakeRequest request2 = fakeRequest("DELETE", "/userProfile/"+newUserId);
+                FakeRequest request2 = fakeRequest("DELETE", "/profiles/business/"+newUserId);
                 Result result2 = route(request2);
 
                 assertEquals("When correct userId in delete user response: "+ contentAsString(result2),

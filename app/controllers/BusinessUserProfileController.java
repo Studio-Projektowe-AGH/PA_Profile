@@ -2,7 +2,6 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.WriteResult;
-import com.nimbusds.jose.JOSEException;
 import models.BusinessUserProfile;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Morphia;
@@ -14,12 +13,10 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import services.authorization.AuthorizationService;
 import services.data.DBProfileService;
 import services.data.DBServicesProvider;
 import services.utils.Utils;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,31 +29,6 @@ public class BusinessUserProfileController extends Controller{
     static Morphia mapper = new Morphia();
     static {
         mapper.map(BusinessUserProfile.class).getMapper().getOptions().setStoreNulls(true);
-    }
-
-    @BodyParser.Of(BodyParser.Json.class)
-    public static Result getBusinessUserProfile(){
-        JsonNode jsonBody = request().body().asJson();
-        String auth_token = jsonBody.findPath("auth_token").textValue();
-        String email = null;
-        try {
-            email = AuthorizationService.verifyToken(auth_token);
-        } catch (ParseException | JOSEException e) {
-            e.printStackTrace();
-            return unauthorized("You have invalid token");
-        }
-        if(email == null){
-            return unauthorized("Wrong token");
-        }
-        Morphia morphia = new Morphia().map(BusinessUserProfile.class);
-        BusinessUserProfile profile = dbProfileService.findOneByEmail(email);
-        if(profile == null){
-            return internalServerError("Weird thing: token was verified and it's ok, but there is no profile for this user ");
-        }
-
-        JsonNode result = Json.parse(morphia.toDBObject(profile).toString());
-
-        return ok(result);
     }
 
     @BodyParser.Of(BodyParser.Json.class)
