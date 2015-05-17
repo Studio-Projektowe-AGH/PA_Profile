@@ -81,6 +81,9 @@ public class BusinessUserProfileController extends Controller{
 
     public static Result getProfile(String userId) {
         BusinessUserProfile profile = dbProfileService.get(new ObjectId(userId));
+        if(profile == null){
+            return notFound("User of this id not found in db");
+        }
         JsonNode profileInJson = Json.parse(mapper.toDBObject(profile).toString());
         return ok(profileInJson);
     }
