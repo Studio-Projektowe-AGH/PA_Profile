@@ -11,12 +11,12 @@ import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.*;
 
 /**
- * Created by Kris on 2015-05-08.
+ * Created by Pine on 17/05/15.
  */
-public class UpdateProfileTest {
+public class UpdateIndividualProfileTest {
 
     static play.test.FakeApplication application;
-    static String correctUserId = "5554f84952423afe1e6ebdcf";
+    static String correctUserId = "11100111";
 
     @BeforeClass
     public static void setUpClass(){
@@ -31,9 +31,9 @@ public class UpdateProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("name", "Tawo Club");
+                body.put("avatar_url", "justurl");
 
-                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct field in update response: "+ contentAsString(result),
@@ -51,9 +51,9 @@ public class UpdateProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("thereIsNoSuchFieldInClass", "Tawo Club");
+                body.put("thereIsNoSuchFieldInClass", "Nofield");
 
-                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When wrong field in update response: "+ contentAsString(result),
@@ -63,7 +63,7 @@ public class UpdateProfileTest {
 
     }
 
-   @Test
+    @Test
     public void denyingWrongUserIds(){
         running(fakeApplication(), new Runnable() {
             @Override
@@ -71,7 +71,7 @@ public class UpdateProfileTest {
 
                 ObjectNode body = Json.newObject();
 
-                FakeRequest request = fakeRequest("PUT", "/profiles/business/zleId").withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/individual/zleId").withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When wrong userId in update response: "+ contentAsString(result),
@@ -89,7 +89,7 @@ public class UpdateProfileTest {
 
                 ObjectNode body = Json.newObject();
 
-                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct userId in update response: "+ contentAsString(result),
@@ -106,11 +106,9 @@ public class UpdateProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("name", "Tawo Club");
-                body.put("phone", "888 613 538");
-                body.put("category_list", "[ Bar, Pub ]");
+                body.put("avatar_url", "new_url");
 
-                FakeRequest request = fakeRequest("PUT", "/profiles/business/"+correctUserId).withJsonBody(body);
+                FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
                 assertEquals("When correct userId in update response: "+ contentAsString(result),
@@ -120,31 +118,5 @@ public class UpdateProfileTest {
 
     }
 
-    @Test
-    public void createAndDeleteUserProfile(){
-        running(fakeApplication(), new Runnable() {
-            @Override
-            public void run() {
-                String newUserId = "553f5db8d4c6879782ddca7f";
-                ObjectNode body = Json.newObject();
-                body.put("name", "Nowy klub");
-                body.put("phone", "888 613 538");
-                body.put("category_list", "[ Bar, Pub ]");
-
-                FakeRequest request = fakeRequest("POST", "/profiles/business/"+newUserId).withJsonBody(body);
-                Result result = route(request);
-
-                assertEquals("When correct userId in create user response: "+ contentAsString(result),
-                        200, status(result));
-
-                FakeRequest request2 = fakeRequest("DELETE", "/profiles/business/"+newUserId);
-                Result result2 = route(request2);
-
-                assertEquals("When correct userId in delete user response: "+ contentAsString(result2),
-                        200, status(result2));
-            }
-        });
-
-    }
-
 }
+

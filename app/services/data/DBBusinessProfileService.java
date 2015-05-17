@@ -9,9 +9,9 @@ import org.mongodb.morphia.dao.BasicDAO;
 /**
  * Created by Kris on 2015-05-07.
  */
-public class DBProfileService extends BasicDAO<BusinessUserProfile, ObjectId>{
+public class DBBusinessProfileService extends BasicDAO<BusinessUserProfile, ObjectId>{
 
-    protected DBProfileService(MongoClient mongoClient, Morphia morphia, String dbName) {
+    protected DBBusinessProfileService(MongoClient mongoClient, Morphia morphia, String dbName) {
         super(mongoClient, morphia, dbName);
     }
 

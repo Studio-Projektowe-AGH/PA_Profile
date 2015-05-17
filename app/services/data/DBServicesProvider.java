@@ -11,30 +11,39 @@ import java.net.UnknownHostException;
  * Created by Kris on 2015-05-07.
  */
 public class DBServicesProvider {
-    static DBProfileService dbProfileService = null;
+    static DBBusinessProfileService dbBusinessProfileService = null;
+    static DBIndividualProfileService dbIndividualProfileService = null;
+    static MongoClientURI mongoClientURI;
+    static MongoClient mongoClient;
+    static Morphia morphia;
+    static String uriString;
+    static String dbName;
 
-    private static void createDBProfileService(){
-        String uriString = Play.application().configuration().getString("mongo.uri");
-        String dbName = Play.application().configuration().getString("mongo.db");
-
+    static {
+        uriString = Play.application().configuration().getString("mongo.uri");
+        dbName = Play.application().configuration().getString("mongo.db");
         try {
-            MongoClientURI mongoClientURI = new MongoClientURI(uriString);
-            MongoClient mongoClient = new MongoClient(mongoClientURI);
-            Morphia morphia = new Morphia();
+            mongoClientURI = new MongoClientURI(uriString);
+            mongoClient = new MongoClient(mongoClientURI);
+            morphia = new Morphia();
             morphia.getMapper().getOptions().setStoreEmpties(true);
             morphia.getMapper().getOptions().setStoreNulls(true);
-
-            dbProfileService = new DBProfileService(mongoClient, morphia, dbName);
-        } catch (UnknownHostException uhe) {
-            uhe.printStackTrace();
+        } catch (UnknownHostException ex) {
+            ex.printStackTrace();
         }
     }
 
-
-    public static DBProfileService getDbProfileService(){
-        if(dbProfileService == null){
-            createDBProfileService();
+    public static DBBusinessProfileService getDbBusinessProfileService() {
+        if (dbBusinessProfileService == null) {
+            dbBusinessProfileService = new DBBusinessProfileService(mongoClient, morphia, dbName);
         }
-        return dbProfileService;
+        return dbBusinessProfileService;
+    }
+
+    public static DBIndividualProfileService getDbIndividualProfileService() {
+        if (dbBusinessProfileService == null) {
+            dbIndividualProfileService = new DBIndividualProfileService(mongoClient, morphia, dbName);
+        }
+        return dbIndividualProfileService;
     }
 }

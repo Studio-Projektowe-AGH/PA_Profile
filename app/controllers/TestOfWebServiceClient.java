@@ -37,8 +37,8 @@ public class TestOfWebServiceClient extends Controller {
 
     public static Result restEasyTest(){
         ObjectNode body = Json.newObject();
-        body.put("email","krzysiekplachno@gmail.com");
-        body.put("password", "krzysiekplachno@gmail.com");
+        body.put("email","mcnadamczyk@gmail.com");
+        body.put("password", "mcnadamczyk");
         body.put("role","idividual");
 
         ClientRequest request = new ClientRequest("https://partyadvisor.herokuapp.com/auth/signup");
