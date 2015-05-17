@@ -41,7 +41,7 @@ public class DBServicesProvider {
     }
 
     public static DBIndividualProfileService getDbIndividualProfileService() {
-        if (dbBusinessProfileService == null) {
+        if (dbIndividualProfileService == null) {
             dbIndividualProfileService = new DBIndividualProfileService(mongoClient, morphia, dbName);
         }
         return dbIndividualProfileService;
