@@ -14,7 +14,7 @@ import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.running;
 
 
-public class DBProfileServiceTest {
+public class DBBusinessProfileServiceTest {
 
     static play.test.FakeApplication application;
 
@@ -22,7 +22,8 @@ public class DBProfileServiceTest {
     public static void setUpClass() {
         application = fakeApplication();
     }
-    static String correctUserId = "5554f84952423afe1e6ebdcf";
+    //static String correctUserId = "5554f84952423afe1e6ebdcf";
+    static String correctUserId = "5554f8915242c8e312e87226";
 
 
     @Test
@@ -30,19 +31,19 @@ public class DBProfileServiceTest {
         running(fakeApplication(), new Runnable() {
             @Override
             public void run() {
-                DBProfileService dbProfileService = DBServicesProvider.getDbProfileService();
+                DBBusinessProfileService dbBusinessProfileService = DBServicesProvider.getDbBusinessProfileService();
                 String testName = "Klub Studio";
                 BusinessUserProfile newProfile = new BusinessUserProfile();
                 newProfile.setName(testName);
-                dbProfileService.save(newProfile);
+                dbBusinessProfileService.save(newProfile);
                 //Class<String> stringClass = String.class;
                 ObjectId newProfileId = newProfile.getId();
-                BusinessUserProfile receivedProfile = dbProfileService.get(newProfileId);
+                BusinessUserProfile receivedProfile = dbBusinessProfileService.get(newProfileId);
                 assertNotNull("Entity of this id: " + newProfile + " not found", receivedProfile);
 
                 assertEquals("Not adding/read profile to/from db failed", testName, receivedProfile.getName());
 
-                WriteResult writeResult = dbProfileService.deleteById(newProfileId);
+                WriteResult writeResult = dbBusinessProfileService.deleteById(newProfileId);
                 assertEquals("Deleting object failed", 1, writeResult.getN());
             }
         });
@@ -53,10 +54,10 @@ public class DBProfileServiceTest {
         running(fakeApplication(), new Runnable() {
             @Override
             public void run() {
-                DBProfileService dbProfileService = DBServicesProvider.getDbProfileService();
-                Query<BusinessUserProfile> query = dbProfileService.createQuery().field(Mapper.ID_KEY).equal(new ObjectId(correctUserId));
+                DBBusinessProfileService dbBusinessProfileService = DBServicesProvider.getDbBusinessProfileService();
+                Query<BusinessUserProfile> query = dbBusinessProfileService.createQuery().field(Mapper.ID_KEY).equal(new ObjectId(correctUserId));
 
-                BusinessUserProfile userProfile = dbProfileService.find(query).get();
+                BusinessUserProfile userProfile = dbBusinessProfileService.find(query).get();
                 assertNotNull("When trying to find entity of existing user by querry with id", userProfile);
                 System.out.println(userProfile);
             }
