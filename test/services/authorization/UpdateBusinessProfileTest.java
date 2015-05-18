@@ -1,4 +1,4 @@
-package services.rs;
+package services.authorization;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.BeforeClass;
@@ -13,10 +13,12 @@ import static play.test.Helpers.*;
 /**
  * Created by Kris on 2015-05-08.
  */
-public class UpdateProfileTest {
+public class UpdateBusinessProfileTest {
 
     static play.test.FakeApplication application;
-    static String correctUserId = "5554f84952423afe1e6ebdcf";
+    //static String correctUserId = "5554f84952423afe1e6ebdcf";
+    static String correctUserId = "5554f8915242c8e312e87226";
+
 
     @BeforeClass
     public static void setUpClass(){
