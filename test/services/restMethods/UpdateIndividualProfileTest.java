@@ -106,7 +106,7 @@ public class UpdateIndividualProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("picture_url", "new_url");
+                body.put("picture_url", "new_urll");
 
                 FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
