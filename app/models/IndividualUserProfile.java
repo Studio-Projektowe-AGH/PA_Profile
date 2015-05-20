@@ -1,10 +1,10 @@
 package models;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,11 +16,22 @@ public class IndividualUserProfile {
 
     @Id
     private ObjectId id;
-    public String avatar_url;
-    public List<String> music_genres = new ArrayList<String>();
+    public String first_name;
+    public String last_name;
+    public int age;
+    public List<String> friends_list;
+    public String picture_url;
+    public List<String> favourite_genres;
+    public List<String> favourite_bands;
+    public SocialID social_id;
 
 
+    @Embedded
+    private static class SocialID{
 
+        private String social_name;
+        private String social_id;
+    }
     public IndividualUserProfile(){};
 
     public IndividualUserProfile(String  userId) {
