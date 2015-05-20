@@ -111,7 +111,7 @@ public class UpdateIndividualProfileTest {
                 FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
 
-                assertEquals("When correct userId in update response: "+ contentAsString(result),
+                assertEquals("Wheen correct userId in update response: "+ contentAsString(result),
                         200, status(result));
             }
         });
