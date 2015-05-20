@@ -77,6 +77,9 @@ public class IndividualUserProfileController extends Controller {
 
     public static Result getProfile(String userId) {
         IndividualUserProfile profile = dbIndividualProfileService.get(new ObjectId(userId));
+        if(profile == null){
+            return notFound("There is no user profile with this id: " + userId);
+        }
         JsonNode profileInJson = Json.parse(mapper.toDBObject(profile).toString());
         return ok(profileInJson);
     }
