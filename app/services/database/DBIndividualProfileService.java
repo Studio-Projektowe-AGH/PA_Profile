@@ -1,4 +1,4 @@
-package services.data;
+package services.database;
 
 import com.mongodb.MongoClient;
 import models.IndividualUserProfile;

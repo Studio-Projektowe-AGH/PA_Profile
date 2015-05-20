@@ -13,8 +13,8 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import services.data.DBBusinessProfileService;
-import services.data.DBServicesProvider;
+import services.database.DBBusinessProfileService;
+import services.database.DBServicesProvider;
 import services.utils.Utils;
 
 import java.util.Iterator;

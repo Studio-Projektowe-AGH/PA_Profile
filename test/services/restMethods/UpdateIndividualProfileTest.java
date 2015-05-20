@@ -1,4 +1,4 @@
-package services.authorization;
+package services.restMethods;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.BeforeClass;
@@ -16,7 +16,7 @@ import static play.test.Helpers.*;
 public class UpdateIndividualProfileTest {
 
     static play.test.FakeApplication application;
-    static String correctUserId = "555555555555555555555555";
+    static String correctUserId = "553f5db8d4c6879782ddca7f";
 
     @BeforeClass
     public static void setUpClass(){
@@ -31,7 +31,7 @@ public class UpdateIndividualProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("avatar_url", "justurl");
+                body.put("picture_url", "justurl");
 
                 FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);
@@ -106,7 +106,7 @@ public class UpdateIndividualProfileTest {
             public void run() {
 
                 ObjectNode body = Json.newObject();
-                body.put("avatar_url", "new_url");
+                body.put("picture_url", "new_url");
 
                 FakeRequest request = fakeRequest("PUT", "/profiles/individual/"+correctUserId).withJsonBody(body);
                 Result result = route(request);

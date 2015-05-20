@@ -1,4 +1,4 @@
-package services.data;
+package services.database;
 
 import com.mongodb.WriteResult;
 import models.BusinessUserProfile;

@@ -1,4 +1,4 @@
-package services.authorization;
+package services.restMethods;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.BeforeClass;
