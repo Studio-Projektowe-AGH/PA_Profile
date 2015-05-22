@@ -1,12 +1,15 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
 import com.mongodb.WriteResult;
 import models.BusinessUserProfile;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.QueryResults;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateResults;
 import play.libs.Json;
@@ -17,7 +20,9 @@ import services.database.DBBusinessProfileService;
 import services.database.DBServicesProvider;
 import services.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -85,6 +90,23 @@ public class BusinessUserProfileController extends Controller {
         BusinessUserProfile profile = dbBusinessProfileService.get(new ObjectId(userId));
         JsonNode profileInJson = Json.parse(mapper.toDBObject(profile).toString());
         return ok(profileInJson);
+    }
+
+    public static Result getAllProfilesId() {
+        List<String> allUsers = new ArrayList<>();
+        QueryResults<BusinessUserProfile> businessUserProfiles = dbBusinessProfileService.find();
+
+        for(Key<BusinessUserProfile> x: businessUserProfiles.asKeyList()){
+            try {
+
+                allUsers.add(x.getId().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("to jest id: " + x.getId()+  "to string" + x.toString());
+            }
+        }
+
+        return ok(new Gson().toJson(allUsers));
     }
 }
 

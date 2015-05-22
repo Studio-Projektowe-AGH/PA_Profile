@@ -149,4 +149,21 @@ public class UpdateBusinessProfileTest {
 
     }
 
+    @Test
+    public void getAllUserProfilesIds(){
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+                FakeRequest request = fakeRequest("GET", "/profiles/business/all");
+                Result result = route(request);
+
+                assertEquals("When obtaining all bussiness ids: "+ contentAsString(result),
+                        200, status(result));
+                System.out.println(contentAsString(result));
+
+
+            }
+        });
+
+    }
 }

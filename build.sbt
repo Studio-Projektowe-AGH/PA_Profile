@@ -31,5 +31,6 @@ libraryDependencies += "org.jboss.resteasy" % "resteasy-jackson2-provider" % "3.
 
 libraryDependencies += "com.nimbusds" % "nimbus-jose-jwt" % "2.22.1"
 
+libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
 
 fork in run := true

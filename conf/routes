@@ -6,10 +6,14 @@
 GET           /                                 controllers.Application.index()
 
 # Accessing business user profile
+GET           /profiles/business/all           controllers.BusinessUserProfileController.getAllProfilesId
+
 GET           /profiles/business/:userId        controllers.BusinessUserProfileController.getProfile(userId)
 POST          /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
 DELETE        /profiles/business/:userId        controllers.BusinessUserProfileController.deleteProfile(userId)
 PUT           /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
+
+
 
 # Accessing individual user profile
 GET           /profiles/individual/:userId        controllers.IndividualUserProfileController.getProfile(userId)
