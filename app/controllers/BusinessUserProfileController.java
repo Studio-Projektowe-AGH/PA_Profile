@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.mongodb.WriteResult;
 import models.BusinessUserProfile;
@@ -105,8 +106,9 @@ public class BusinessUserProfileController extends Controller {
                 System.out.println("to jest id: " + x.getId()+  "to string" + x.toString());
             }
         }
-
-        return ok(new Gson().toJson(allUsers));
+        ObjectNode jsonResponse =  Json.newObject();
+        jsonResponse.put("clubsIds",Json.parse(new Gson().toJson(allUsers)));
+        return ok(jsonResponse);
     }
 }
 
