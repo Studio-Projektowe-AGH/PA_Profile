@@ -49,10 +49,8 @@ public class BusinessUserProfileController extends Controller {
             e.printStackTrace();
             return notFound("This is wrong format of user id: " + userId);
         }
-
-
-
         JsonNode jsonBody = request().body().asJson();
+        System.out.println("Oto body json " +jsonBody);
         Iterator<Map.Entry<String, JsonNode>> nodeIterator = jsonBody.fields();
 
         while (nodeIterator.hasNext()) {
@@ -67,8 +65,24 @@ public class BusinessUserProfileController extends Controller {
         Query<BusinessUserProfile> query = dbBusinessProfileService.createQuery().field(Mapper.ID_KEY).equal(new ObjectId(userId));
         while (nodeIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = nodeIterator.next();
-            UpdateOperations<BusinessUserProfile> updateOperation = dbBusinessProfileService.createUpdateOperations()
-                    .set(field.getKey(), field.getValue().asText());
+            UpdateOperations<BusinessUserProfile> updateOperation = null;
+            if(field.getValue().isArray()){
+                //if json node is list
+                updateOperation = dbBusinessProfileService.createUpdateOperations()
+                        .unset(field.getKey());
+                dbBusinessProfileService.getDatastore().update(query, updateOperation, true);
+                List<String> newValues = new ArrayList();
+                for(JsonNode x: field.getValue()){
+                    newValues.add(x.asText());
+                }
+                    updateOperation = dbBusinessProfileService.createUpdateOperations()
+                            .addAll(field.getKey(), newValues, false );
+            }else {
+                //if json node is not list
+                updateOperation = dbBusinessProfileService.createUpdateOperations()
+                        .set(field.getKey(), field.getValue().asText());
+            }
+
             UpdateResults updateResults = dbBusinessProfileService.getDatastore().update(query, updateOperation, true);
             System.out.println("Uaktualnienie: " + field.getKey() + " z wartoscia: " + field.getValue() + " powiodlo sie (1 oznacza tak): " + updateResults.getInsertedCount());
         }

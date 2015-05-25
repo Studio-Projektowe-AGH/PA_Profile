@@ -17,7 +17,9 @@ import services.database.DBIndividualProfileService;
 import services.database.DBServicesProvider;
 import services.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,8 +58,23 @@ public class IndividualUserProfileController extends Controller {
         Query<IndividualUserProfile> query = dbIndividualProfileService.createQuery().field(Mapper.ID_KEY).equal(new ObjectId(userId));
         while (nodeIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = nodeIterator.next();
-            UpdateOperations<IndividualUserProfile> updateOperation = dbIndividualProfileService.createUpdateOperations()
-                    .set(field.getKey(), field.getValue().asText());
+            UpdateOperations<IndividualUserProfile> updateOperation = null;
+            if(field.getValue().isArray()){
+                //if json node is list
+                updateOperation = dbIndividualProfileService.createUpdateOperations()
+                        .unset(field.getKey());
+                dbIndividualProfileService.getDatastore().update(query, updateOperation, true);
+                List<String> newValues = new ArrayList();
+                for(JsonNode x: field.getValue()){
+                    newValues.add(x.asText());
+                }
+                updateOperation = dbIndividualProfileService.createUpdateOperations()
+                        .addAll(field.getKey(), newValues, false );
+            }else {
+                //if json node is not list
+                updateOperation = dbIndividualProfileService.createUpdateOperations()
+                        .set(field.getKey(), field.getValue().asText());
+            }
             UpdateResults updateResults = dbIndividualProfileService.getDatastore().update(query, updateOperation, true);
             System.out.println("Uaktualnienie: " + field.getKey() + " z wartoscia: " + field.getValue() + " powiodlo sie (1 oznacza tak): " + updateResults.getInsertedCount());
         }
