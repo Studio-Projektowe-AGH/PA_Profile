@@ -1,4 +1,19 @@
-This is your new Play application
+======
+Host: https://goparty-gateway.herokuapp.com
 =================================
+### Ścieżki:
 
-This file will be packaged with your application, when using `activator dist`.
+#### Klient biznesowy
+GET           /profiles/business/:userId        controllers.BusinessUserProfileController.getProfile(userId)
+POST          /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
+DELETE        /profiles/business/:userId        controllers.BusinessUserProfileController.deleteProfile(userId)
+PUT           /profiles/business/:userId        controllers.BusinessUserProfileController.updateProfile(userId)
+
+#### Klient indywidualny
+GET           /profiles/individual/:userId        controllers.IndividualUserProfileController.getProfile(userId)
+POST          /profiles/individual/:userId        controllers.IndividualUserProfileController.updateProfile(userId)
+DELETE        /profiles/individual/:userId        controllers.IndividualUserProfileController.deleteProfile(userId)
+PUT           /profiles/individual/:userId        controllers.IndividualUserProfileController.updateProfile(userId)
+
+### Testowe
+GET /profiles/business/all controllers.BusinessUserProfileController.getAllProfilesId
