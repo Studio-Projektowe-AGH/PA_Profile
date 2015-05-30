@@ -17,3 +17,6 @@ PUT           /profiles/individual/:userId        controllers.IndividualUserProf
 
 ### Testowe
 GET /profiles/business/all controllers.BusinessUserProfileController.getAllProfilesId
+
+### fomaty danych:
+http://www.evernote.com/l/AjXjxU9BojxBwLxFhSlf7UWLfeVUjQhsPMQ/
