@@ -93,6 +93,10 @@ public class BusinessUserProfileController extends Controller {
 
 
     public static Result deleteProfile(String userId) {
+        BusinessUserProfile profileToDelete = dbBusinessProfileService.get(new ObjectId(userId));
+        if(profileToDelete == null){
+            return notFound("No existing profile for this user: " + userId);
+        }
         WriteResult writeResult = dbBusinessProfileService.deleteById(new ObjectId(userId));
         if(writeResult.getN()==1){
             return ok();
