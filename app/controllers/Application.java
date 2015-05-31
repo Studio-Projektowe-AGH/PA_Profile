@@ -9,7 +9,7 @@ public class Application extends Controller {
 
         return ok("<html><body><h3>Witaj na GoParty: Profile Service</h3> <br/>" +
                 "<h5><a href=\"http://docs.gopartyprofileserviceapi.apiary.io/#\" > " +
-                "Dokumentacja API serwisu </a></h5></body></html>").as("text/html");
+                "Dokumentacja API serwisu, bla bla bla </a></h5></body></html>").as("text/html");
     }
 
 }
