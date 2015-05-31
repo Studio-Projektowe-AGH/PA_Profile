@@ -106,7 +106,13 @@ public class BusinessUserProfileController extends Controller {
     }
 
     public static Result getProfile(String userId) {
-        BusinessUserProfile profile = dbBusinessProfileService.get(new ObjectId(userId));
+        BusinessUserProfile profile = null;
+        try {
+            profile = dbBusinessProfileService.get(new ObjectId(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return internalServerError("Wrong user id, cannot map it ObjectId");
+        }
         if(profile==null){
             return notFound("No existing profile for this user: " + userId);
         }
