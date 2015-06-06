@@ -41,13 +41,16 @@ public class BusinessUserProfileController extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateProfile(String userId) {
         try {
+            if(!ObjectId.isValid(userId)){
+                return badRequest("This is wrong format of user id: " + userId );
+            }
             if (dbBusinessProfileService.get(new ObjectId(userId)) == null) {
                 dbBusinessProfileService.save(new BusinessUserProfile(userId));
                 //return notFound("There is no user with this id: " + userId);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return notFound("This is wrong format of user id: " + userId);
+            return notFound("Data in database is in wrong format - cannot be mapped to Java object.");
         }
         JsonNode jsonBody = request().body().asJson();
         System.out.println("Oto body json " +jsonBody);
@@ -94,6 +97,7 @@ public class BusinessUserProfileController extends Controller {
 
     public static Result deleteProfile(String userId) {
         BusinessUserProfile profileToDelete = dbBusinessProfileService.get(new ObjectId(userId));
+
         if(profileToDelete == null){
             return notFound("No existing profile for this user: " + userId);
         }
@@ -106,13 +110,20 @@ public class BusinessUserProfileController extends Controller {
     }
 
     public static Result getProfile(String userId) {
+        if(! ObjectId.isValid(userId)){
+            return badRequest("Bad request, wrong user id: "+userId+", cannot map it to ObjectId. Check by means of ObjectId.isValid()");
+        }
         BusinessUserProfile profile = null;
         try {
-            profile = dbBusinessProfileService.get(new ObjectId(userId));
+            ObjectId userObjectId = new ObjectId(userId);
+            System.out.println("Bad ass!!!!!!!!!");
+            profile = dbBusinessProfileService.get(userObjectId);
+
         } catch (Exception e) {
             e.printStackTrace();
-            return internalServerError("Wrong user id, cannot map it ObjectId");
+            return internalServerError("Wrong user id, cannot map it to ObjectId. Checked by catching exception");
         }
+
         if(profile==null){
             return notFound("No existing profile for this user: " + userId);
         }
