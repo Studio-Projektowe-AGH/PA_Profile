@@ -1,7 +1,6 @@
 package models;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
@@ -26,12 +25,7 @@ public class IndividualUserProfile {
     public SocialID social_id;
 
 
-    @Embedded
-    private static class SocialID{
 
-        private String social_name;
-        private String social_id;
-    }
     public IndividualUserProfile(){};
 
     public IndividualUserProfile(String  userId) {

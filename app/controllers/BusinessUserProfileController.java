@@ -1,10 +1,13 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.mongodb.WriteResult;
 import models.BusinessUserProfile;
+import models.Location;
+import models.LocationCoordinates;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.Morphia;
@@ -21,6 +24,7 @@ import services.database.DBBusinessProfileService;
 import services.database.DBServicesProvider;
 import services.utils.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,10 +37,14 @@ import java.util.Map;
 public class BusinessUserProfileController extends Controller {
     static DBBusinessProfileService dbBusinessProfileService = DBServicesProvider.getDbBusinessProfileService();
     static Morphia mapper = new Morphia();
+    static ObjectMapper objectMapper = new ObjectMapper();
+
 
     static {
         mapper.map(BusinessUserProfile.class).getMapper().getOptions().setStoreNulls(true);
     }
+
+    // TO DO dlaczego to nie dziąła
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateProfile(String userId) {
@@ -80,10 +88,27 @@ public class BusinessUserProfileController extends Controller {
                 }
                     updateOperation = dbBusinessProfileService.createUpdateOperations()
                             .addAll(field.getKey(), newValues, false );
-            }else {
-                //if json node is not list
+            }else if(field.getKey().equals("location")) {
+                try {
+                    Location location = objectMapper.readValue(field.getValue().toString(), Location.class   );
+                    updateOperation = dbBusinessProfileService.createUpdateOperations()
+                            .set(field.getKey(), location);
+                } catch (IOException e) {
+                    return badRequest("Wrong format of field: "+field.getKey()+" " +field.getValue().toString());
+                }
+
+            }else if( field.getKey().equals("locationCoordinates")){
+                try {
+                    LocationCoordinates locationCoordinates = objectMapper.readValue(field.getValue().toString(), LocationCoordinates.class   );
+                    updateOperation = dbBusinessProfileService.createUpdateOperations()
+                            .set(field.getKey(), locationCoordinates);
+                } catch (IOException e) {
+                    return badRequest("Wrong format of field: "+field.getKey()+" " +field.getValue().toString());
+                }
+            }else{
                 updateOperation = dbBusinessProfileService.createUpdateOperations()
                         .set(field.getKey(), field.getValue().asText());
+
             }
 
             UpdateResults updateResults = dbBusinessProfileService.getDatastore().update(query, updateOperation, true);

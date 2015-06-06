@@ -50,16 +50,4 @@ public class BusinessUserProfile {
         return name;
     }
 
-    @Embedded
-    private static class Location {
-        String city;
-        String country;
-        String street;
-    }
-
-    @Embedded
-    private static class LocationCoordinates {
-        Double xCoordinate;
-        Double yCoordinate;
-    }
 }

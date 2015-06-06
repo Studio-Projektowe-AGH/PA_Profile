@@ -77,7 +77,7 @@ public class UpdateBusinessProfileTest {
                 Result result = route(request);
 
                 assertEquals("When wrong userId in update response: "+ contentAsString(result),
-                        404, status(result));
+                        400, status(result));
             }
         });
 

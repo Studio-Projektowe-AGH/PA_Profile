@@ -1,8 +1,10 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteResult;
 import models.IndividualUserProfile;
+import models.SocialID;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.Mapper;
@@ -17,6 +19,7 @@ import services.database.DBIndividualProfileService;
 import services.database.DBServicesProvider;
 import services.utils.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.Map;
 public class IndividualUserProfileController extends Controller {
     static DBIndividualProfileService dbIndividualProfileService = DBServicesProvider.getDbIndividualProfileService();
     static Morphia mapper = new Morphia();
+    static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         mapper.map(IndividualUserProfile.class).getMapper().getOptions().setStoreNulls(true);
@@ -35,6 +39,7 @@ public class IndividualUserProfileController extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateProfile(String userId) {
+
         try {
             if (dbIndividualProfileService.get(new ObjectId(userId)) == null) {
                 dbIndividualProfileService.save(new IndividualUserProfile(userId));
@@ -70,6 +75,14 @@ public class IndividualUserProfileController extends Controller {
                 }
                 updateOperation = dbIndividualProfileService.createUpdateOperations()
                         .addAll(field.getKey(), newValues, false );
+            }else if(field.getKey().equals("social_id")) {
+                try {
+                    SocialID socialID = objectMapper.readValue(field.getValue().toString(), SocialID.class);
+                    updateOperation = dbIndividualProfileService.createUpdateOperations()
+                            .set(field.getKey(), socialID);
+                } catch (IOException e) {
+                    return badRequest("Wrong format of field: "+field.getKey()+" " +field.getValue().toString());
+                }
             }else {
                 //if json node is not list
                 updateOperation = dbIndividualProfileService.createUpdateOperations()
