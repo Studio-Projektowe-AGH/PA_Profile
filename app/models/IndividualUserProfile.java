@@ -22,7 +22,7 @@ public class IndividualUserProfile {
     public String picture_url;
     public List<String> favourite_genres;
     public List<String> favourite_bands;
-    public SocialID social_id;
+    public SocialId social_id;
 
 
 

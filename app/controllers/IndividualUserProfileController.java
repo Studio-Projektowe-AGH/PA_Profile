@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteResult;
 import models.IndividualUserProfile;
-import models.SocialID;
+import models.SocialId;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.Mapper;
@@ -77,7 +77,7 @@ public class IndividualUserProfileController extends Controller {
                         .addAll(field.getKey(), newValues, false );
             }else if(field.getKey().equals("social_id")) {
                 try {
-                    SocialID socialID = objectMapper.readValue(field.getValue().toString(), SocialID.class);
+                    SocialId socialID = objectMapper.readValue(field.getValue().toString(), SocialId.class);
                     updateOperation = dbIndividualProfileService.createUpdateOperations()
                             .set(field.getKey(), socialID);
                 } catch (IOException e) {
