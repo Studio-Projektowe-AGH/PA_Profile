@@ -25,7 +25,7 @@ public class BusinessUserProfile {
     public Location location = new Location();
     
     @Embedded
-    public LocationCoordinates locationCoordinates;// = new LocationCoordinates();
+    public LocationCoordinates locationCoordinates = new LocationCoordinates();
     public String website;
     public List<String> music_genres;// = new ArrayList<String>();
     public String phone;

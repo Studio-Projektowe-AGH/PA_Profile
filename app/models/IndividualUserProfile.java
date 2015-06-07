@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import javax.persistence.Embedded;
 import java.util.List;
 
 /**
@@ -22,7 +23,9 @@ public class IndividualUserProfile {
     public String picture_url;
     public List<String> favourite_genres;
     public List<String> favourite_bands;
-    public SocialId social_id;
+
+    @Embedded
+    public SocialId social_id = new SocialId();
 
 
 
